@@ -1,0 +1,16 @@
+import http from 'node:http';
+import {readFile} from 'node:fs/promises';
+import path from 'node:path';
+const root=process.cwd();
+const port=Number(process.env.PORT||4173);
+const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.json':'application/json','.png':'image/png'};
+http.createServer(async(req,res)=>{
+  try {
+    let route=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
+    if(route.startsWith('/Infinite-train/')) route=route.slice('/Infinite-train'.length);
+    const file=path.resolve(root,'.'+route+(route.endsWith('/')?'index.html':''));
+    if (!file.startsWith(root+path.sep)) {res.writeHead(403).end();return;}
+    const data=await readFile(file);
+    res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'}).end(data);
+  } catch {res.writeHead(404).end('Not found');}
+}).listen(port,'127.0.0.1',()=>console.log(`Preview: http://127.0.0.1:${port}/Infinite-train/`));

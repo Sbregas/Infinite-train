@@ -83,3 +83,23 @@ test('reduced motion produces a stable canvas and keyboard input stays inside th
   await page.getByLabel('Nome del vagone').fill('Il mio vagone');await page.keyboard.press('ArrowRight');
   await expect(page.locator('#car-title')).toHaveText('La serra errante');
 });
+test('scene and carriage previews retain detail at device pixel density',async({page})=>{
+  await page.goto('./');await page.locator('html[data-ready]').waitFor();
+  const metrics=await page.locator('#scene').evaluate(c=>({w:c.width,h:c.height,box:c.getBoundingClientRect().toJSON(),dpr:Math.min(devicePixelRatio,3)}));
+  expect(metrics.w).toBeGreaterThanOrEqual(Math.floor(metrics.box.width*metrics.dpr));
+  expect(metrics.h).toBeGreaterThanOrEqual(Math.floor(metrics.box.height*metrics.dpr));
+  expect(await page.locator('.carriage-card canvas').first().evaluate(c=>c.width)).toBeGreaterThanOrEqual(616);
+});
+test('detail zoom preserves selected carriage and pointer navigation',async({page})=>{
+  await page.emulateMedia({reducedMotion:'reduce'});await page.goto('./?car=library');
+  await page.getByRole('button',{name:'Ingrandisci il vagone'}).click();
+  await expect(page.locator('#zoom')).toHaveAttribute('aria-pressed','true');
+  await expect(page.locator('#car-title')).toHaveText('La biblioteca delle ore');
+  const box=await page.locator('#scene').boundingBox();
+  await page.mouse.click(box.x+box.width/2,box.y+box.height*.55);
+  await expect(page.locator('#car-title')).toHaveText('La biblioteca delle ore');
+  await page.getByRole('button',{name:'Vagone successivo'}).click();
+  await expect(page.locator('#car-title')).toHaveText('Il giardino sospeso');
+  await page.getByRole('button',{name:'Mostra il convoglio'}).click();
+  await expect(page.locator('#zoom')).toHaveAttribute('aria-pressed','false');
+});

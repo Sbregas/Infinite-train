@@ -5,6 +5,7 @@ Un viaggio pixel art condiviso, con una locomotiva in rame e quattro piccoli mon
 ## Cosa funziona
 
 - Scena originale Canvas con montagne in parallasse, stelle, ruote, fumo e cambio notte/alba.
+- Illustrazioni dei vagoni a 616 × 376 pixel, resa alla densità del dispositivo (fino a 3×) e lente per una vista dettagliata a 1,8×. Le parti statiche sono memorizzate per non ridisegnare ogni foglia e ogni libro a ogni fotogramma.
 - Selezione dei vagoni tramite swipe, trascinamento, pulsanti, schede e frecce della tastiera; Home/End sul canvas.
 - Pausa, preferenze di movimento ridotto, controlli HTML accessibili, dialogo nativo con Escape e contenuto alternativo senza JavaScript.
 - Storie dei vagoni e classifica. I voti demo sono locali; i voti pubblici usano esclusivamente GitHub.
@@ -57,7 +58,8 @@ Tutti i percorsi dell'app sono relativi e vengono verificati sotto `/Infinite-tr
 - `index.html`, `app.css`, `tokens.css`: interfaccia responsive e contenuto alternativo.
 - `src/catalog.js`: vagoni, campioni demo e associazioni alle Issue.
 - `src/model.js`: persistenza, classifica e lettura dei voti pubblici.
-- `src/scene.js`: artwork procedurale originale e interazioni del canvas.
+- `src/artwork.js`: illustrazioni dettagliate originali, cache e ruote animate.
+- `src/scene.js`: paesaggio, densità dello schermo, zoom e interazioni del canvas.
 - `src/app.js`: controlli, stato condivisibile nell'URL e dialogo contributi.
 - `tests/`: verifiche automatiche; `docs/`: scelte progettuali e verifica.
 

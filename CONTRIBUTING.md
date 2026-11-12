@@ -6,12 +6,12 @@ Includi nome, descrizione, bozza e attribuzione. Condividi solo immagini e codic
 
 ## Proporzioni grafiche
 
-I vagoni attuali occupano 154 × 94 pixel logici, con agganci a y=81 e ruote con asse a y=86. Tieni 16 pixel liberi fra vagoni. Per una bozza puoi usare un PNG trasparente a queste dimensioni o un multiplo intero. La versione attuale disegna gli interni con Canvas in `src/scene.js`; importare uno sprite richiede una modifica del renderer.
+I vagoni occupano 154 × 94 unità nel mondo, ma vengono disegnati su una griglia di **616 × 376 pixel** (4× per lato). Le coordinate artistiche sono quindi quattro volte quelle del mondo: agganci intorno a y=324, ruote intorno a y=345. Tieni 64 pixel artistici liberi fra vagoni. Per una bozza usa un PNG trasparente a 616 × 376 o un multiplo intero. `src/artwork.js` contiene gli interni dettagliati e una cache delle parti statiche; `src/scene.js` gestisce scena, densità dello schermo e zoom. Importare uno sprite richiede una modifica del renderer.
 
 ## Sviluppo
 
 1. Crea una branch, installa le dipendenze di sviluppo con `npm ci` e avvia `npm start`.
-2. Aggiungi la scheda a `src/catalog.js` e il disegno a `src/scene.js`. I quattro vagoni iniziali e i loro punteggi sono dimostrativi.
+2. Aggiungi la scheda a `src/catalog.js` e il disegno a `src/artwork.js`. I quattro vagoni iniziali e i loro punteggi sono dimostrativi.
 3. Esegui `npm test` e `npm run test:browser` (prima installa Chromium con `npx playwright install chromium`).
 4. Apri una PR con schermate mobile/desktop e descrizione del cambiamento. Non inserire token, credenziali o dati personali nei file pubblici.
 

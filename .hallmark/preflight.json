@@ -1,0 +1,1 @@
+{"scanned":"2026-11-12","findings":{"existing":"README.md only, no application or design system","framework":"vanilla ES modules","assets":"original procedural pixel art"},"preserve":["existing README heading and repository history"],"introduce":["interactive railway app","night/dawn art","local and public vote modes"]}

@@ -1,0 +1,29 @@
+name: Proponi un vagone
+description: Porta un piccolo mondo sul Treno Infinito
+title: "[Vagone] "
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Nome del vagone
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: La tua idea
+      description: Descrivi l'interno, l'atmosfera e la sua piccola storia.
+    validations:
+      required: true
+  - type: textarea
+    id: artwork
+    attributes:
+      label: Immagini e crediti
+      description: Puoi trascinare qui una bozza. Indica autore e licenza di ogni risorsa.
+  - type: checkboxes
+    id: rights
+    attributes:
+      label: Diritti
+      options:
+        - label: Ho creato il materiale o ho il permesso di condividerlo e ho indicato i relativi crediti.
+          required: true

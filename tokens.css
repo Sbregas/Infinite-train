@@ -1,0 +1,14 @@
+/* Hallmark · tokens for the night railway */
+:root {
+color-scheme:dark;
+--color-paper:#111f24;--color-paper-2:#192b30;--color-paper-3:#22383c;
+--color-ink:#f1e9d9;--color-muted:#a9bab9;--color-rule:#35484b;
+--color-accent:#eeb783;--color-accent-ink:#25231f;--color-focus:#f8ce83;
+--color-green:#a8c5a8;--color-amber:#e6c18e;--color-rose:#d6a5a1;--color-blue:#afbfce;
+--color-overlay:#0e191ed9;--color-backdrop:#070f15cc;--color-clear:transparent;
+--font-body:'Trebuchet MS','Segoe UI',sans-serif;
+--font-display:'Palatino Linotype','Book Antiqua',Palatino,Georgia,serif;
+--space-xs:8px;--space-sm:12px;--space-md:16px;--space-lg:24px;--space-xl:40px;--space-2xl:64px;
+--radius-control:6px;--radius-panel:10px;
+--space-4:4px;--space-8:8px;--space-12:12px;--space-16:16px;--space-20:20px;--space-24:24px;--space-28:28px;--space-32:32px;--space-36:36px;--space-40:40px;--space-56:56px;--space-72:72px;
+}

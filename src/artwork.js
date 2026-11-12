@@ -1,4 +1,5 @@
-// Native 616 × 376 carriage art. Cached once; moving wheels are drawn separately.
+import {getIllustration} from './illustrations.js';
+// Procedural fallback, used while the full-resolution illustrations load.
 const C = {
   void:'#122328', shadow:'#213235', metal:'#354e50', steel:'#718d88', edge:'#a5b5a2',
   gold:'#d6ab69', light:'#f7d797', copper:'#9b6247', brass:'#bc885a', rust:'#5e4437',
@@ -153,6 +154,8 @@ export function getArtwork(kind){
   cache.set(kind,canvas);return canvas;
 }
 export function drawCarriage(c,kind,t=0){
+  const illustration=getIllustration(kind);
+  if(illustration){const {image,bounds}=illustration;const height=154*bounds[3]/bounds[2];c.drawImage(image,...bounds,0,92-height,154,height);return;}
   c.save();c.scale(.25,.25);c.drawImage(getArtwork(kind),-20,-8);wheels(c,kind,t);c.restore();
 }
 export function drawThumbnail(canvas,kind){

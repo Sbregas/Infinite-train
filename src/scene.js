@@ -1,5 +1,5 @@
 import {drawCarriage,drawThumbnail} from './artwork.js';
-// Original procedural pixel artwork. All scene colors are collected in this palette.
+// Procedural landscape behind the illustrated train. Scene colors live here.
 const P={sky:'#142833',horizon:'#31434a',mountain:'#263f47',ridge:'#35535a',forest:'#1c363e',near:'#122b32',bridge:'#172b30',stone:'#314349',mortar:'#22363c',rail:'#b3a38a',star:'#abc6c5',moon:'#e5d7af',moonShade:'#b5c4b6',dark:'#182629',black:'#101e22',iron:'#365255',ironLight:'#64817c',brass:'#c79559',gold:'#f1ca85',wood:'#794d3f',woodLight:'#af7853',woodDark:'#453b34',glass:'#476b65',glassLight:'#7da49a',leaf:'#56775b',leafLight:'#a4b878',leafDark:'#344f41',pot:'#ad6952',cream:'#e9d7a5',warm:'#d7ad63',red:'#a25853',rose:'#ce8f85',roseLight:'#edb4a1',water:'#567f82',blue:'#8ba7b4',paper:'#dfc8a4',smoke:'#83908b',dawnSky:'#b5a491',dawnHorizon:'#dfb589',dawnMountain:'#7f9090',dawnRidge:'#647f82'};
 const rect=(c,x,y,w,h,color)=>{c.fillStyle=color;c.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));};
 const line=(c,x1,y1,x2,y2,color,width=1)=>{c.strokeStyle=color;c.lineWidth=width;c.beginPath();c.moveTo(Math.round(x1)+.5,Math.round(y1)+.5);c.lineTo(Math.round(x2)+.5,Math.round(y2)+.5);c.stroke();};
@@ -10,7 +10,7 @@ function pine(c,x,y,h,color){rect(c,x-1,y-h,2,h,P.woodDark);for(let j=0;j<4;j++)
 export const renderThumbnail=drawThumbnail;
 export class Scene {
   constructor(canvas,cars,onSelect){
-    this.canvas=canvas;this.c=canvas.getContext('2d');this.cars=cars;this.onSelect=onSelect;this.index=0;this.time=0;this.camera=-20;this.target=-20;this.paused=false;this.dawn=false;this.visible=true;this.hovered=false;this.focused=false;this.raf=0;this.zoom=1;this.worldWidth=150;this.worldHeight=75;this.pixelRatio=1;
+    this.canvas=canvas;this.c=canvas.getContext('2d');this.cars=cars;this.onSelect=onSelect;this.index=0;this.time=0;this.camera=-20;this.target=-20;this.paused=false;this.dawn=false;this.visible=true;this.hovered=false;this.focused=false;this.raf=0;this.zoom=1;this.scale=2;this.worldWidth=150;this.worldHeight=75;this.pixelRatio=1;
     this.media=matchMedia('(prefers-reduced-motion: reduce)');this.paused=this.media.matches;
     this.resize=new ResizeObserver(()=>this.resizeSurface());this.resize.observe(canvas);
     window.addEventListener('resize',()=>this.resizeSurface());
@@ -19,8 +19,8 @@ export class Scene {
     canvas.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')this.hovered=true;});canvas.addEventListener('pointerleave',()=>{this.hovered=false;this.wake();});
     canvas.addEventListener('focus',()=>{this.focused=true;});canvas.addEventListener('blur',()=>{this.focused=false;this.wake();});
     canvas.addEventListener('pointerdown',e=>{if(e.button!==0)return;this.drag={x:e.clientX,y:e.clientY,camera:this.camera,moved:false};canvas.setPointerCapture(e.pointerId);});
-    canvas.addEventListener('pointermove',e=>{if(!this.drag)return;const dx=e.clientX-this.drag.x;if(Math.abs(dx)>8)this.drag.moved=true;if(this.drag.moved){this.camera=this.clamp(this.drag.camera-dx/(2*this.zoom));this.target=this.camera;this.draw();}});
-    canvas.addEventListener('pointerup',e=>{if(!this.drag)return;const drag=this.drag;this.drag=null;if(drag.moved){const center=this.camera+this.worldWidth/2;const index=Math.max(0,Math.min(cars.length-1,Math.round((center-245)/170)));if(this.zoom===1||index!==this.index)onSelect(cars[index].id);}else{const bounds=canvas.getBoundingClientRect(),x=(e.clientX-bounds.left)/(2*this.zoom)+this.camera,y=(e.clientY-bounds.top)/(2*this.zoom);const index=Math.floor((x-168)/170);if(index>=0&&index<cars.length&&y>this.ground()-95&&y<this.ground()+4)onSelect(cars[index].id);}this.wake();});
+    canvas.addEventListener('pointermove',e=>{if(!this.drag)return;const dx=e.clientX-this.drag.x;if(Math.abs(dx)>8)this.drag.moved=true;if(this.drag.moved){this.camera=this.clamp(this.drag.camera-dx/this.scale);this.target=this.camera;this.draw();}});
+    canvas.addEventListener('pointerup',e=>{if(!this.drag)return;const drag=this.drag;this.drag=null;if(drag.moved){const center=this.camera+this.worldWidth/2;let index=Math.max(0,Math.min(cars.length-1,Math.round((center-245)/170)));if(this.zoom===1&&index===this.index&&Math.abs(e.clientX-drag.x)>70)index=Math.max(0,Math.min(cars.length-1,index+(e.clientX<drag.x?1:-1)));if(this.zoom===1||index!==this.index)onSelect(cars[index].id);}else{const bounds=canvas.getBoundingClientRect(),x=(e.clientX-bounds.left)/this.scale+this.camera,y=(e.clientY-bounds.top)/this.scale;const index=Math.floor((x-168)/170);if(index>=0&&index<cars.length&&y>this.ground()-95&&y<this.ground()+4)onSelect(cars[index].id);}this.wake();});
     canvas.addEventListener('pointercancel',()=>{this.drag=null;this.wake();});
     this.frame=this.frame.bind(this);this.wake();
   }
@@ -28,7 +28,7 @@ export class Scene {
     const b=this.canvas.getBoundingClientRect();if(!b.width||!b.height)return;
     this.pixelRatio=Math.min(window.devicePixelRatio||1,3);
     this.canvas.width=Math.round(b.width*this.pixelRatio);this.canvas.height=Math.round(b.height*this.pixelRatio);
-    this.worldWidth=b.width/(2*this.zoom);this.worldHeight=b.height/(2*this.zoom);
+    this.scale=(b.width>700?3.2:2)*this.zoom;this.worldWidth=b.width/this.scale;this.worldHeight=b.height/this.scale;
     this.select(this.cars[this.index].id,true);
   }
   ground(){return Math.round(this.worldHeight*(this.zoom>1?.84:.75));}
@@ -51,6 +51,8 @@ export class Scene {
     rect(c,0,g+4,w,h-g,P.bridge);rect(c,0,g+5,w,4,P.stone);
     const shift=(t*10+cam*.7)%72;for(let x=-72-shift;x<w+72;x+=72){rect(c,x+12,g+22,46,h-g,P.near);polygon(c,[[x+12,g+24],[x+18,g+16],[x+26,g+12],[x+44,g+12],[x+52,g+16],[x+58,g+24]],P.near);line(c,x+10,g+24,x+10,h,P.stone);line(c,x+60,g+24,x+60,h,P.stone);for(let y=g+13;y<h;y+=8){line(c,x,y,x+10,y,P.mortar);line(c,x+60,y,x+72,y,P.mortar);}}
     for(let x=-12-(t*18)%13;x<w;x+=13)rect(c,x,g+2,9,2,P.woodLight);rect(c,0,g,w,2,P.rail);rect(c,0,g+4,w,1,P.ironLight);
+    // Draw the connecting drawbars behind the transparent carriage sprites.
+    for(let i=0;i<this.cars.length;i++){const left=(i===0?154:152+i*170)-cam,right=168+i*170-cam;line(c,left,g-10,right,g-10,P.black,4);line(c,left,g-10,right,g-10,P.brass,1);}
     c.save();c.translate(Math.round(-cam),g-91);drawCarriage(c,'engine',t);
     for(let j=0;j<9;j++){const age=(t*.4+j/9)%1;c.globalAlpha=(1-age)*.22;circle(c,38+age*57,11-age*29,3+age*6,P.smoke);c.globalAlpha=1;}c.restore();
     this.cars.forEach((car,i)=>{const x=168+i*170-cam;if(x<-165||x>w+5)return;c.save();c.translate(Math.round(x),g-91);drawCarriage(c,car.id,t);c.restore();if(i===this.index&&this.zoom===1){rect(c,x+45,g+12,64,1,P.brass);rect(c,x+75,g+10,4,4,P.gold);}});

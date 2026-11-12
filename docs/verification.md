@@ -3,14 +3,16 @@
 Verifica locale del 12 novembre 2026, Windows, Node 24.18 e Playwright 1.65.
 
 - 5 test del modello: storage malformato/bloccato, toggle voto, classifica con parità, conteggi pubblici non configurati, risposte pubbliche non valide.
-- 20 test browser: 10 scenari eseguiti a 1440 × 1000 e con profilo iPhone 13 in Chromium. Coprono navigazione, tastiera, touch, cambio alba, voti persistenti, separazione pubblico/demo, errori API e retry, dialogo, JavaScript disattivato, storage bloccato, canvas fermo con movimento ridotto, densità dei pixel e selezione durante lo zoom.
+- 24 test browser: 12 scenari eseguiti a 1440 × 1000 e con profilo iPhone 13 in Chromium. Coprono navigazione, tastiera, touch, cambio alba, voti persistenti, separazione pubblico/demo, errori API e retry, dialogo, JavaScript disattivato, storage bloccato, canvas fermo con movimento ridotto, densità dei pixel, selezione durante lo zoom, caricamento delle illustrazioni, errore/retry e vista ravvicinata con zoom, scorrimento e ripristino del focus.
 - Schermate reali e assenza di overflow orizzontale controllate a 320, 390, 1440 e 1920 pixel.
 - Percorsi verificati sotto `/Infinite-train/`, come su GitHub Pages.
-- Aggiornamento grafico: artwork 616 × 376, anteprime 720 × 408, screenshot a densità 1×/2×/3×. Esempi del canvas in vista dettagli: desktop 1326 × 520, Retina 2652 × 1040, mobile 1044 × 1260 su area CSS 348 × 420. Dettagli ridisegnati, non semplice ingrandimento dei vecchi pixel.
+- Aggiornamento grafico: cinque PNG RGBA da 1774 × 887 pixel, circa 16,3 MB in totale. Resa e vista ravvicinata controllate a densità 1×/2×/3×, senza overflow della pagina, alle larghezze 320, 390, 1440 e 1920. Ingrandimento oltre il 100% senza nuovi dettagli inventati. Il pannello dei dettagli scorre indipendentemente dalla pagina.
 - Nessuna dipendenza runtime. Audit npm senza vulnerabilità note al momento della verifica.
 - Controllo statico stile: 0 FAIL, 0 REFLEX, 0 WARN. La fase render del linter non è disponibile (manca puppeteer-core); il controllo visuale effettivo usa Playwright e le schermate sopra.
 
 ## Limiti espliciti
+
+Le illustrazioni generate sono statiche: personaggi e ruote non hanno animazioni individuali. Il riferimento Floor796 riguarda la densità e la ricchezza degli ambienti; non si dichiara equivalenza con il suo intero mondo animato. I PNG richiedono circa 16,3 MB al primo caricamento; su connessioni lente rimane visibile il disegno procedurale di riserva.
 
 Non è stata verificata una pubblicazione GitHub Pages. I test mobile sono emulazione Chromium, non Safari su un iPhone fisico. I conteggi pubblici sono stati verificati con risposte API controllate: le quattro associazioni alle Issue sono intenzionalmente vuote. Non esiste un backend per upload automatici: il modulo apre una proposta GitHub che l'utente deve inviare. La classifica cambia ordine, il convoglio mantiene il proprio ordine per evitare salti durante l'esplorazione.
 

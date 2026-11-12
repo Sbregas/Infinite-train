@@ -77,6 +77,7 @@ test('touch swipe changes carriage and the dawn control changes the landscape',a
 });
 test('reduced motion produces a stable canvas and keyboard input stays inside the form',async({page})=>{
   await page.emulateMedia({reducedMotion:'reduce'});await page.goto('./');
+  await expect(page.locator('html')).toHaveAttribute('data-artwork','ready');
   const first=await page.locator('#scene').evaluate(c=>c.toDataURL());await page.waitForTimeout(150);
   expect(await page.locator('#scene').evaluate(c=>c.toDataURL())).toBe(first);
   await page.getByRole('button',{name:'Crea un vagone',exact:true}).click();
@@ -102,4 +103,35 @@ test('detail zoom preserves selected carriage and pointer navigation',async({pag
   await expect(page.locator('#car-title')).toHaveText('Il giardino sospeso');
   await page.getByRole('button',{name:'Mostra il convoglio'}).click();
   await expect(page.locator('#zoom')).toHaveAttribute('aria-pressed','false');
+});
+test('inhabited artwork loads at full resolution and detail viewer zooms without losing focus',async({page})=>{
+  await page.goto('./?car=library');
+  await expect(page.locator('html')).toHaveAttribute('data-artwork','ready');
+  await page.getByRole('button',{name:'Guarda da vicino'}).click();
+  await expect(page.getByRole('dialog',{name:'La biblioteca delle ore'})).toBeVisible();
+  const image=page.locator('#detail-image');
+  expect(await image.evaluate(img=>img.naturalWidth)).toBeGreaterThanOrEqual(1700);
+  const before=await image.evaluate(img=>img.getBoundingClientRect().width);
+  await page.getByRole('button',{name:'Ingrandisci i dettagli'}).click();
+  expect(await image.evaluate(img=>img.getBoundingClientRect().width)).toBeGreaterThan(before);
+  const viewport=page.locator('#detail-viewport');
+  await viewport.evaluate(el=>{el.scrollLeft=el.scrollWidth;});
+  expect(await viewport.evaluate(el=>el.scrollLeft)).toBeGreaterThan(0);
+  await page.getByRole('button',{name:'Adatta',exact:true}).click();
+  expect(await image.evaluate(img=>img.getBoundingClientRect().width)).toBeLessThanOrEqual(await viewport.evaluate(el=>el.clientWidth));
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#detail-viewer')).not.toBeVisible();
+  await expect(page.getByRole('button',{name:'Guarda da vicino'})).toBeFocused();
+});
+test('artwork failures show a retry and keep navigation and local votes usable',async({page})=>{
+  await page.route('**/assets/carriages/library.png',route=>route.abort());
+  await page.goto('./?car=library');
+  await expect(page.locator('html')).toHaveAttribute('data-artwork','partial');
+  await expect(page.locator('#art-status')).toContainText('Riprova');
+  await expect(page.getByRole('button',{name:'Guarda da vicino'})).toBeDisabled();
+  await page.locator('#vote-button').click();
+  await expect(page.locator('#vote-button')).toHaveAttribute('aria-pressed','true');
+  await page.unroute('**/assets/carriages/library.png');await page.getByRole('button',{name:'Riprova le illustrazioni'}).click();
+  await expect(page.locator('html')).toHaveAttribute('data-artwork','ready');
+  await expect(page.getByRole('button',{name:'Guarda da vicino'})).toBeEnabled();
 });

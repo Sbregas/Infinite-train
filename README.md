@@ -1,11 +1,11 @@
 # Infinite-train
 
-Un viaggio pixel art condiviso, con una locomotiva in rame e quattro piccoli mondi: una serra, una biblioteca, un giardino con koi e un osservatorio. Il prototipo è stato ricostruito da zero; non utilizza il precedente archivio.
+Un viaggio illustrato condiviso, con una locomotiva in rame e quattro piccoli mondi: una serra, una biblioteca, un giardino con koi e un osservatorio. Il prototipo è stato ricostruito da zero; non utilizza il precedente archivio.
 
 ## Cosa funziona
 
-- Scena originale Canvas con montagne in parallasse, stelle, ruote, fumo e cambio notte/alba.
-- Illustrazioni dei vagoni a 616 × 376 pixel, resa alla densità del dispositivo (fino a 3×) e lente per una vista dettagliata a 1,8×. Le parti statiche sono memorizzate per non ridisegnare ogni foglia e ogni libro a ogni fotogramma.
+- Scena originale Canvas con montagne in parallasse, stelle, fumo e cambio notte/alba.
+- Cinque illustrazioni originali generate a 1774 × 887 pixel, con persone, attività e oggetti da esplorare. Canvas alla densità del dispositivo (fino a 3×), lente sul convoglio e vista «Guarda da vicino» con scorrimento e zoom fino al 200%. Oltre il 100% si ingrandiscono i pixel originali; non si aggiungono dettagli. Interni, personaggi e ruote sono statici; paesaggio e fumo sono animati. Provenienza e brief in `assets/README.md`.
 - Selezione dei vagoni tramite swipe, trascinamento, pulsanti, schede e frecce della tastiera; Home/End sul canvas.
 - Pausa, preferenze di movimento ridotto, controlli HTML accessibili, dialogo nativo con Escape e contenuto alternativo senza JavaScript.
 - Storie dei vagoni e classifica. I voti demo sono locali; i voti pubblici usano esclusivamente GitHub.
@@ -28,7 +28,7 @@ npx playwright install chromium
 npm run test:browser
 ```
 
-`npm test` copre voti, persistenza e risposte pubbliche. I test browser coprono viewport desktop e iPhone in Chromium, navigazione touch/tastiera, dialogo, rete indisponibile, storage bloccato e movimento ridotto. Non equivalgono a un test su iPhone fisico/Safari. Nessun passaggio di build è necessario. Con il server avviato, `node scripts/capture.js` salva anteprime in `test-results/previews`.
+`npm test` copre voti, persistenza e risposte pubbliche. I test browser coprono viewport desktop e iPhone in Chromium, navigazione touch/tastiera, dialogo, rete indisponibile, storage bloccato e movimento ridotto. Non equivalgono a un test su iPhone fisico/Safari. Nessun passaggio di build è necessario. Con il server avviato, `node scripts/capture-worlds.js` salva anteprime e viste ravvicinate in `test-results/worlds`. Le immagini vengono caricate in parallelo; un errore mostra il pulsante Riprova e mantiene utilizzabile il treno con un disegno di riserva.
 
 ## Voti demo e voti pubblici
 
@@ -58,7 +58,10 @@ Tutti i percorsi dell'app sono relativi e vengono verificati sotto `/Infinite-tr
 - `index.html`, `app.css`, `tokens.css`: interfaccia responsive e contenuto alternativo.
 - `src/catalog.js`: vagoni, campioni demo e associazioni alle Issue.
 - `src/model.js`: persistenza, classifica e lettura dei voti pubblici.
-- `src/artwork.js`: illustrazioni dettagliate originali, cache e ruote animate.
+- `assets/carriages/`: cinque PNG trasparenti originali (circa 16,3 MB complessivi).
+- `src/illustrations.js`: caricamento, decodifica, cache e gestione errori delle immagini.
+- `src/artwork.js`: composizione degli sprite e disegni procedurali di riserva.
+- `src/detail-viewer.js`: vista ravvicinata, zoom e scorrimento.
 - `src/scene.js`: paesaggio, densità dello schermo, zoom e interazioni del canvas.
 - `src/app.js`: controlli, stato condivisibile nell'URL e dialogo contributi.
 - `tests/`: verifiche automatiche; `docs/`: scelte progettuali e verifica.
